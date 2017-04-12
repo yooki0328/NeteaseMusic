@@ -1,0 +1,66 @@
+<template>
+    <article>
+        <nav>
+            <ul>
+                <li v-for="(bar,index) in bars">
+                    <a :href="bar.href" @click="changeBar(index)" :class="{actived:bar.isActive}">{{bar.title}}</a>
+                </li>
+            </ul>
+        </nav>
+    </article>
+</template>
+<script>
+export default {
+    name: 'article',
+    data() {
+        return {
+            bars: [{
+                title: '个性推荐',
+                href: "#",
+                isActive: true
+            }, {
+                title: '歌单',
+                href: "#",
+                isActive: false
+            }, {
+                title: '主播电台',
+                href: "#",
+                isActive: false
+            }, {
+                title: '排行榜',
+                href: "#",
+                isActive: false
+            }, {
+                title: '歌手',
+                href: "#",
+                isActive: false
+            }, {
+                title: '最新音乐',
+                href: "#",
+                isActive: false
+            }, ]
+        }
+    },
+    methods: {
+        changeBar(index) {
+            this.lists.forEach(function(val, ind) {
+                val.isActive = false;
+                if (ind === index) {
+                    val.isActive = true;
+                }
+            })
+        }
+    }
+}
+</script>
+<style scoped>
+article {
+    float: left;
+    margin-left: 200px;
+}
+
+.actived {
+    background-color: #E8E9EC;
+    border-left: black solid 2px;
+}
+</style>
