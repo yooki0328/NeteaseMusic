@@ -11,6 +11,7 @@
 </template>
 <style scoped>
   aside{
+  padding:20px 0 0 0;
   float:left;
   width:200px;
   height:500px;
@@ -25,20 +26,19 @@
   display:block;
   width:100%;
   box-sizing:border-box;
-  padding:5px 0;
+  padding:10px 0;
   padding-left:50px;
   text-decoration:none;
   color:#ADAFB2;
-
  }
-
  nav ul li a:hover{
-  color:#9B9CA1;
-  
+  color:#f1f1f1;
+  background-color:#27282c;
  }
  .actived{
   background-color:#27282C;
   border-left:#B82525 solid 4px;
+  color:white;
  }
 </style>
 <script>
