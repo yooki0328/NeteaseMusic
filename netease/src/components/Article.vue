@@ -7,6 +7,7 @@
                 </li>
             </ul>
         </nav>
+		<div class="musicList">
         <dl>
 			<dt>推荐歌单</dt>
 
@@ -17,6 +18,7 @@
 				</div>
 			</dd>
         </dl>
+		</div>
     </article>
 </template>
 <script>
@@ -50,14 +52,14 @@ export default {
                 isActive: false
             }, ],
             lists:[
+           /* {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
-            {src:"/static/pic.png",text:"好听的歌单",href:'#'},
-            {src:"/static/pic.png",text:"好听的歌单",href:'#'}
+            {src:"/static/pic.png",text:"好听的歌单",href:'#'}*/
             ]
         }
     },
@@ -69,8 +71,25 @@ export default {
                     val.isActive = true;
                 }
             })
-        }
-    }
+        },
+		getMusicList(){
+			const url = "http://localhost:3000/personalized";
+
+			this.$http.get(url).then(res=>{	
+				var musicList = res.data.result;
+				musicList.forEach(val=>{
+					this.lists.push({
+						src: val.picUrl,
+						text: val.name,
+						href: '#'
+					});
+				})
+			})
+		}
+    },
+	created(){
+			this.getMusicList();
+	}
 }
 </script>
 <style scoped>
@@ -108,11 +127,14 @@ article ul li a:hover{
     border-bottom: #CACBD1 solid 2px;
 	color:#CACBD1;
 }
+article .musicList{
+	width: 100%;
+	height: 450px;
+	overflow-x: hidden; 
+	overflow-y: scroll;
+}
 article dl{
 	padding:20px 50px;
-	width: 700px;
-	height:400px;
-	overflow:hidden;
 }
 article dl dt{
 	color:#A9AAB1;
@@ -122,7 +144,6 @@ article dl dd{
 	float:left;
 	width: 150px;
 	height: 150px;
-	border: red solid 1px;
 	margin-top: 20px;
 	margin-bottom: 15px;
 	margin-right: 15px;
@@ -135,6 +156,10 @@ article dl dd img{
 article dl dd a{
 	color: white;
 	text-decoration: none;
+	white-space: nowrap;
+	font-size: 12px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 .list_text{
 	padding-top:5px;

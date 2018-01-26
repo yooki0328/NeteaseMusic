@@ -6,12 +6,12 @@
 			<a href="#" class="playbar next"></a>
 		</div>
 		<div id="time">
-			<span id="timeStart">{{start|timeFormat}}</span>	
+			<span id="timeStart">{{start}}</span>	
 		<!--	<div id="processBar">-->
 				<!--<div id="processRed"></div>-->
 				<input  id="processBar" type="range" @input=changeRangeBar($event) :style="audioColorBar" name="audio">
 		<!--	</div>-->
-			<span id="timeEnd""">{{end|timeFormat}}</span>	
+			<span id="timeEnd""">{{end}}</span>	
 			
 		</div>
 		<div id="volume">
@@ -172,7 +172,6 @@ export default{
 			}
 		},
 		changeRangeBar(event) {
-				console.log(event.target.name)
 			var value = event.target.value;
 			if(event.target.name=="audio"){
 				this.audioColorBar = `background: linear-gradient(90deg,red,red ${value}%,white ${value}%,white)`
@@ -180,7 +179,7 @@ export default{
 			
 				this.volumeColorBar = `background: linear-gradient(90deg,red,red ${value}%,white ${value}%,white)`
 			}
-		}
+		},
 
 	}
 }
