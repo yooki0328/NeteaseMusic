@@ -7,7 +7,7 @@
                 </li>
             </ul>
         </nav>
-		<div class="musicList">
+		<div class="musicList List" v-show="barShow[0]">
         <dl>
 			<dt>推荐歌单</dt>
 
@@ -18,6 +18,26 @@
 				</div>
 			</dd>
         </dl>
+		</div>
+		<div class="radioFm" v-show="barShow[1]">
+			
+		</div>
+		<div class="rankList" v-show="barShow[2]">
+			
+		</div>
+		<div class="singers List" v-show="barShow[3]">
+				<dl>
+					<dt>热门歌手</dt>
+					<dd v-for="singer in singers">
+						<div>
+							<img :src="singer.src" alt="pic">
+							<a :href="singer.href" class="list_text">{{singer.text}}</a>
+						</div>
+					</dd>
+				</dl>
+		</div>
+		<div class="musicNew" v-show="barShow[4]">
+			
 		</div>
     </article>
 </template>
@@ -30,10 +50,6 @@ export default {
                 title: '个性推荐',
                 href: "#",
                 isActive: true
-            }, {
-                title: '歌单',
-                href: "#",
-                isActive: false
             }, {
                 title: '主播电台',
                 href: "#",
@@ -60,17 +76,21 @@ export default {
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'}*/
-            ]
+            ],
+			singers: [],
+			barShow: [true,false,false,false,false]
         }
     },
     methods: {
         changeBar(index) {
-            this.bars.forEach(function(val, ind) {
-                val.isActive = false;
+			this.bars.forEach((val,ind)=>{
+				val.isActive = false;
+				this.barShow[ind] = false;
                 if (ind === index) {
                     val.isActive = true;
+					this.barShow[ind]=true;
                 }
-            })
+			})
         },
 		getMusicList(){
 			const url = "http://localhost:3000/personalized";
@@ -85,10 +105,25 @@ export default {
 					});
 				})
 			})
+		},
+		getSingerList(){
+			const url = "http://localhost:3000/top/artists";
+			this.$http.get(url).then(res=>{
+				var artists = res.data.artists
+				console.log(artists)
+				artists.forEach((val)=>{
+					this.singers.push({
+						src: val.img1v1Url,
+						text: val.name,
+						href: '#'
+					})
+				})
+			})
 		}
     },
 	created(){
 			this.getMusicList();
+			this.getSingerList();
 	}
 }
 </script>
@@ -127,11 +162,27 @@ article ul li a:hover{
     border-bottom: #CACBD1 solid 2px;
 	color:#CACBD1;
 }
-article .musicList{
+article .List{
 	width: 100%;
 	height: 450px;
 	overflow-x: hidden; 
 	overflow-y: scroll;
+}
+article .List::-webkit-scrollbar{
+	width: 4px;
+	height: 100%;
+}
+article .List::-webkit-scrollbar-track{
+	background-color: black;
+}
+article .List::-webkit-scrollbar-thumb{
+	background-color: #7c2929;
+}
+article .List::-webkit-scrollbar-button{
+	background-color: black;
+}
+article .List::-webkit-scrollbar-corner{
+	background-color: black;
 }
 article dl{
 	padding:20px 50px;
