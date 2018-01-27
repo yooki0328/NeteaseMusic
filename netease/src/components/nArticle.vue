@@ -7,7 +7,7 @@
                 </li>
             </ul>
         </nav>
-		<div class="musicList List" v-show="barShow[0]">
+		<div class="musicList List listscroll" v-show="barShow[0]">
         <dl>
 			<dt>推荐歌单</dt>
 
@@ -23,9 +23,20 @@
 			
 		</div>
 		<div class="rankList" v-show="barShow[2]">
-			
+			<div>
+				<span>官方榜</span>
+			</div>			
+			<ul class="rankul listscroll">
+			        <li class="rankli" v-for="rank in ranks">
+						<h2>{{rank.name}}</h2>
+						<ul>
+						        <li v-for="(music,index) in rank.tracks"><span>{{index+1}}</span>&nbsp;<span>{{music.name}}</span>
+<span>{{music.author}}</span></li>
+						</ul>
+					</li>
+			</ul>
 		</div>
-		<div class="singers List" v-show="barShow[3]">
+		<div class="singers List listscroll" v-show="barShow[3]">
 				<dl>
 					<dt>热门歌手</dt>
 					<dd v-for="singer in singers">
@@ -77,6 +88,7 @@ export default {
             {src:"/static/pic.png",text:"好听的歌单",href:'#'}*/
             ],
 			singers: [],
+			ranks: [],
 			barShow: [true,false,false,false,false]
         }
     },
@@ -109,7 +121,6 @@ export default {
 			const url = "http://localhost:3000/top/artists";
 			this.$http.get(url).then(res=>{
 				var artists = res.data.artists
-				console.log(artists)
 				artists.forEach((val)=>{
 					this.singers.push({
 						src: val.img1v1Url,
@@ -118,11 +129,27 @@ export default {
 					})
 				})
 			})
+		},
+		getRanksList(){
+			for(let i =0;i<5;i++){
+				var url = "http://localhost:3000/top/list?idx="+i;
+				this.$http.get(url).then(res=>{
+					var tracks = res.data.playlist.tracks.slice(0,8);
+					console.log(res.data.playlist)
+					var name = res.data.playlist.name;
+					var url = res.data.playlist.coverImgUrl;
+					this.ranks.push({
+						name: name,
+						tracks: tracks,
+					})
+				})
+			}
 		}
     },
 	created(){
 			this.getMusicList();
 			this.getSingerList();
+			this.getRanksList();
 	}
 }
 </script>
@@ -137,25 +164,50 @@ article {
 }
 article nav{
 	margin-left:50px;
-	padding-left:100px;
 	border-bottom: #77787A 1px solid;
 }
-article ul{
+article nav ul{
 	height:34px;
 }
-article ul li{
+article nav ul li{
 	list-style: none;
 	float:left;
 }
-article ul li a{
+article nav ul li a{
 	text-decoration: none;
 	display: block;
 	color: #77787A;
 	padding:5px 10px;
 	text-align:center;
 }
-article ul li a:hover{
+article nav ul li a:hover{
 	color: #CACBD1;
+}
+article .rankul{
+	margin-left:50px;
+	height: 400px;
+	overflow-y: scroll;
+}
+article .rankul .rankli{
+	list-style-type: none;
+	width: 200px;
+	float: left;
+	height: 250px;
+	overflow: hidden;
+	color: #CACBD1;
+}
+article .rankul .rankli ul{
+	height: 80%;
+	color: inherit;
+	overflow: hidden;
+}
+article .rankul .rankli ul li{
+	width: 80%;
+	height: 20px;
+	padding: 2px 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .actived {
     border-bottom: #CACBD1 solid 2px;
@@ -167,20 +219,20 @@ article .List{
 	overflow-x: hidden; 
 	overflow-y: scroll;
 }
-article .List::-webkit-scrollbar{
+article .listscroll::-webkit-scrollbar{
 	width: 4px;
 	height: 100%;
 }
-article .List::-webkit-scrollbar-track{
+article .listscroll::-webkit-scrollbar-track{
 	background-color: black;
 }
-article .List::-webkit-scrollbar-thumb{
+article .listscroll::-webkit-scrollbar-thumb{
 	background-color: #7c2929;
 }
-article .List::-webkit-scrollbar-button{
+article .listscroll::-webkit-scrollbar-button{
 	background-color: black;
 }
-article .List::-webkit-scrollbar-corner{
+article .listscroll::-webkit-scrollbar-corner{
 	background-color: black;
 }
 article dl{
