@@ -74,7 +74,6 @@ export default {
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'},
-            {src:"/static/pic.png",text:"好听的歌单",href:'#'},
             {src:"/static/pic.png",text:"好听的歌单",href:'#'}*/
             ],
 			singers: [],
