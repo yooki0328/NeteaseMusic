@@ -1,9 +1,10 @@
 <template>
 	<footer>
+		<audio :src="curMusic.src" ref="player" > </audio>
 		<div id="btnGroup">
-			<a href="#" class="playbar prev"></a>
-			<a href="#" :class="[playState,{playbar: true}]" @click = changePlayState()></a>
-			<a href="#" class="playbar next"></a>
+			<a href="javascript:;" class="playbar prev"></a>
+			<a href="javascript:;" :class="[playState,{playbar: true}]" @click = playMusicControll() ></a>
+			<a href="javascript:;" class="playbar next" @click=playNext(curMusic.index)></a>
 		</div>
 		<div id="time">
 			<span id="timeStart">{{start}}</span>	
@@ -11,7 +12,7 @@
 				<!--<div id="processRed"></div>-->
 				<input  id="processBar" type="range" @input=changeRangeBar($event) :style="audioColorBar" name="audio">
 		<!--	</div>-->
-			<span id="timeEnd""">{{end}}</span>	
+			<span id="timeEnd">{{end}}</span>	
 			
 		</div>
 		<div id="volume">
@@ -157,19 +158,44 @@ export default{
 			playState: 'play',
 			volumeColorBar: "",
 			audioColorBar: "",
-
+			musicList: [
+				{src: '../../static/music/岑宁儿 - 追光者.mp3'},
+				{src: '../../static/music/校长 - 带你去旅行.mp3'},
+				{src: '../../static/music/王建房 - 在人间.mp3'},
+				{src: '../../static/music/蔡健雅 - 红色高跟鞋.mp3'},
+				{src: '../../static/music/陈一发儿 - 童话镇.mp3'},
+			],
+			curMusic: {
+				index: 1,
+				src: '../../static/music/校长 - 带你去旅行.mp3'
+			}
 		}
 	},
 	methods:{
-		createPlayer(){
-			var audio ="" 
+		playMusicControll(){
+			
+				if(this.player.paused){
+					this.player.play();	
+					this.playState = 'pause';
+				}else{
+					this.player.pause();
+					this.playState = 'play';
+				}
 		},
-		changePlayState(){
-			if(this.playState == 'play'){
-				this.playState = 'pause';
-			}else{
-				this.playState = 'play';
+		playNext(index){
+			
+			let nextIndex = index + 1;
+			let allIndex = this.musicList.length;
+			if( nextIndex >= allIndex) {
+				nextIndex = nextIndex % allIndex;
 			}
+			this.curMusic.src = this.musicList[nextIndex].src;
+			this.curMusic.index = nextIndex;
+			this.player.play();
+			this.$nextTick(()=>{
+				this.player.play();
+			})
+			
 		},
 		changeRangeBar(event) {
 			var value = event.target.value;
@@ -181,6 +207,9 @@ export default{
 			}
 		},
 
+	},
+	mounted(){
+		this.player = this.$refs.player;
 	}
 }
 </script>

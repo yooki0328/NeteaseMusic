@@ -135,7 +135,7 @@ export default {
 				var url = "http://localhost:3000/top/list?idx="+i;
 				this.$http.get(url).then(res=>{
 					var tracks = res.data.playlist.tracks.slice(0,8);
-					console.log(res.data.playlist)
+					
 					var name = res.data.playlist.name;
 					var url = res.data.playlist.coverImgUrl;
 					this.ranks.push({
