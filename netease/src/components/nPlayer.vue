@@ -178,6 +178,10 @@ footer #play-info .music-pic{
 	flex: 1;
 	margin-right: 20px;
 }
+footer #play-info .music-pic img{
+  width: 34px;
+  height: 34px;
+}
 </style>
 <script>
 export default {
@@ -190,45 +194,46 @@ export default {
       volumeColorBar: "",
       audioColorBar: "",
       musicList: [
-        { 
-			src: "../../static/music/岑宁儿 - 追光者.mp3",
-			img: '../../static/img/jeay.jpg',
-			name: '追光者',
-			artist: '岑宁儿' 
-		},
-        { 
-			src: "../../static/music/校长 - 带你去旅行.mp3",
-			img: '../../static/img/jeay.jpg',
-			name: '带你去旅行',
-			artist: '校长'
-		},
-        { 
-			src: "../../static/music/王建房 - 在人间.mp3",
-			img: '../../static/img/jeay.jpg',
-			name: '在人间',
-			artist: '王建房'
-		 },
-        { 
-			src: "../../static/music/蔡健雅 - 红色高跟鞋.mp3",
-			img: '../../static/img/jeay.jpg',
-			name: '红色高跟鞋',
-			artist: '蔡健雅'
-		},
-        { 
-			src: "../../static/music/陈一发儿 - 童话镇.mp3",
-			img: '../../static/img/jeay.jpg',
-			name: '童话镇',
-			artist: '陈一发儿' 
-			
-		}
+        // { 
+        //   src: "../../static/music/岑宁儿 - 追光者.mp3",
+        //   img: '../../static/img/jeay.jpg',
+        //   name: '追光者',
+        //   artist: '岑宁儿' 
+        // },
+        // { 
+        //   src: "../../static/music/校长 - 带你去旅行.mp3",
+        //   img: '../../static/img/jeay.jpg',
+        //   name: '带你去旅行',
+        //   artist: '校长'
+        // },
+        // { 
+        //   src: "../../static/music/王建房 - 在人间.mp3",
+        //   img: '../../static/img/jeay.jpg',
+        //   name: '在人间',
+        //   artist: '王建房'
+        // },
+        // { 
+        //   src: "../../static/music/蔡健雅 - 红色高跟鞋.mp3",
+        //   img: '../../static/img/jeay.jpg',
+        //   name: '红色高跟鞋',
+        //   artist: '蔡健雅'
+        // },
+        // { 
+        //   src: "../../static/music/陈一发儿 - 童话镇.mp3",
+        //   img: '../../static/img/jeay.jpg',
+        //   name: '童话镇',
+        //   artist: '陈一发儿' 
+          
+        // }
       ],
       curMusic: {
-        index: 1,
+        index: 0,
         src: "../../static/music/校长 - 带你去旅行.mp3",
-		img: '../../static/img/jeay.jpg',
-		name: '带你去旅行',
-		artist: '校长'
-	  },
+        img: '../../static/img/jeay.jpg',
+        name: '带你去旅行',
+        artist: '校长'
+	    },
+      timer: '',
     };
   },
   methods: {
@@ -247,11 +252,18 @@ export default {
       }
     },
 	switchMusic(index){
-		this.curMusic = JSON.parse(JSON.stringify(this.musicList[index]));
+    this.curMusic = JSON.parse(JSON.stringify(this.musicList[index]));
+    this.getMusicDetail(this.curMusic.id)
 		this.curMusic.index = index;
 		this.$nextTick(() => {
-			this.playState = "pause";
-			this.player.play();
+      this.player.play();
+      this.playState = "pause";
+      this.curTime = this.player.currentTime;
+      this.player.oncanplay = ()=>{
+        this.allTime = this.player.duration;
+      } 
+		
+      // this.allTime = this.player.duration;
 		});
 	},
     playNext(index) {
@@ -273,26 +285,54 @@ export default {
     changeRangeBar(event) {
       var value = event.target.value;
       if (event.target.name == "audio") {
+
+        this.curTime = this.player.currentTime = this.player.duration * (value/100);
         this.audioColorBar = `background: linear-gradient(90deg,red,red ${value}%,white ${value}%,white)`;
       } else {
         this.volumeColorBar = `background: linear-gradient(90deg,red,red ${value}%,white ${value}%,white)`;
       }
-	},
-	timeFormat(time) {
-		
-		let timeInt = parseInt(time),
-			timeFormatt = '',
-			timeSecond = parseInt(timeInt % 60),
-			timeMinute = parseInt(timeInt / 60);
-		timeSecond = timeSecond > 10 ? timeSecond : '0' + timeSecond;
-		timeMinute = timeMinute > 10 ? timeMinute : '0' + timeMinute;
-		timeFormatt = timeMinute + ':' + timeSecond;
-		console.log(timeFormatt)
-		return timeFormatt;
-	}
+    },
+    timeFormat(time) {
+      
+      let timeInt = parseInt(time),
+          timeFormatt = '',
+          timeSecond = parseInt(timeInt % 60),
+          timeMinute = parseInt(timeInt / 60);
+      timeSecond = timeSecond > 10 ? timeSecond : '0' + timeSecond;
+      timeMinute = timeMinute > 10 ? timeMinute : '0' + timeMinute;
+      timeFormatt = timeMinute + ':' + timeSecond;
+      return timeFormatt;
+    },
+    getMusicList() {
+      const url = "http://localhost:3000/top/list?idx=3";
+				this.$http.get(url).then(res=>{
+					let tracks = res.data.playlist.tracks.slice(0,10);
+          console.log(tracks)
+          tracks.forEach((item,index)=>{
+            let music = item.al;
+            let singer = item.ar[0]; 
+            
+            this.musicList.push({
+              src: '',
+              id: music.id,
+              img: music.picUrl,
+              name: music.name,
+              artist: singer.name
+            });
+          });
+          console.log(this.musicList);
+				})
+    },
+    getMusicDetail(id) {
+      const url = "http://localhost:3000/music/url?id=33894312";
+      this.$http.get(url).then(res=>{
+        console.log(res);
+      })
+    }
   },
   mounted() {
-	this.player = this.$refs.player;
+  this.player = this.$refs.player;
+  this.getMusicList()
   },
   computed: {
 	  curTimec: function(){
@@ -306,7 +346,10 @@ export default {
 	  curTime: function(currentTime){
 		  let value = (currentTime / this.allTime * 100).toFixed(2);
 		  this.audioColorBar = `background: linear-gradient(90deg,red,red ${value}%,white ${value}%,white)`;
-	  }
+      if(value == 100){
+        this.switchMusic(this.curMusic.index + 1);
+      }
+    }
   }
 };
 </script>

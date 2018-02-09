@@ -27,10 +27,10 @@
 				<span>官方榜</span>
 			</div>			
 			<ul class="rankul listscroll">
-			        <li class="rankli" v-for="rank in ranks">
+			        <li class="rankli" v-for="(rank,index) in ranks" :key = "index">
 						<h2>{{rank.name}}</h2>
 						<ul>
-						        <li v-for="(music,index) in rank.tracks"><span>{{index+1}}</span>&nbsp;<span>{{music.name}}</span>
+						        <li v-for="(music,index) in rank.tracks" :key="index"><span>{{index+1}}</span>&nbsp;<span>{{music.name}}</span>
 <span>{{music.author}}</span></li>
 						</ul>
 					</li>
@@ -39,7 +39,7 @@
 		<div class="singers List listscroll" v-show="barShow[3]">
 				<dl>
 					<dt>热门歌手</dt>
-					<dd v-for="singer in singers">
+					<dd v-for="(singer,index) in singers" :key="index">
 						<div>
 							<img :src="singer.src" alt="pic">
 							<a :href="singer.href" class="list_text">{{singer.text}}</a>
