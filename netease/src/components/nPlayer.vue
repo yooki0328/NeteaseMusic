@@ -11,7 +11,7 @@
 			<div class="music-pic">
 				<img :src="curMusic.img" alt="music-img" />
 			</div>
-			<div>
+			<div class="music-info">
 				<div class="j-flag">
 					<a href="javascript:;" class="curmusic-name">{{curMusic.name}}</a>
 					<a href="javascript:;" class="curmusic-artist">{{curMusic.artist}}</a>
@@ -25,11 +25,19 @@
 			</div>
 			
 		</div>
+    <div id="music-list" v-show="musicListshow" class="listscroll">
+      <h4 class="listhdc">播放列表</h4>
+      <ul>
+        <li v-for="(music,index) in musicList" :key="index">{{music.name}}</li>
+      </ul>
+    </div>
+    <div id="music-list-button">
+      <button @click="displayMusicList">播放列表</button>
+    </div>
 		<div id="volume">
-		<div>
-		
-			<a href="#" class="volumeIcon"></a>
-		</div>
+      <div>
+        <a href="#" class="volumeIcon"></a>
+      </div>
 			<!--	<div class="volumeControlInner"></div>-->
 			<input id="volumeControl" type="range" @input=changeRangeBar($event) :style="volumeColorBar" name="volume">
 			
@@ -39,15 +47,17 @@
 <style scoped>
 footer {
   background-color: #373535;
+  position: relative;
   width: 1000px;
   height: 70px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  /* justify-content: space-around; */
 }
 footer #btnGroup {
   height: 40px;
   margin-left: 20px;
+  flex:1;
 }
 footer #btnGroup a {
   display: block;
@@ -62,7 +72,7 @@ footer #btnGroup .playbar {
   background-image: url("../assets/playbar.png");
 }
 footer #time {
-  width: 300px;
+  width: 80%;
   height: 30px;
   display: flex;
   align-items: center;
@@ -84,13 +94,13 @@ footer #time #timeStart,
 footer #time #timeEnd {
   color: white;
   font-size: 15px;
-  flex: 1;
 }
 footer #volume {
   width: 100px;
   height: 40px;
   display: flex;
   align-items: center;
+  flex: 1;
 }
 footer #volume .volumeIcon {
   display: block;
@@ -172,15 +182,68 @@ footer .j-flag a:last-child{
 }
 footer #play-info{
 	display: flex;
+  flex:2;
 	align-items: center;
 }
 footer #play-info .music-pic{
-	flex: 1;
+	/* flex: 1; */
 	margin-right: 20px;
 }
 footer #play-info .music-pic img{
   width: 34px;
   height: 34px;
+}
+footer #play-info .music-info{
+  flex: 2;
+}
+footer #music-list{
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  overflow-y: scroll;
+  background-color:#191B1F;
+  opacity:0.9;
+  top: -300px;
+  right: 20px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+footer #music-list-button{
+  /* flex:1; */
+}
+footer #music-list .listhdc{
+  font-size: 16px;
+  color: #e2e2e2;
+  margin-bottom: 5px;
+  padding-left: 15px;  
+  background-color: black; 
+}
+footer #music-list ul{
+  list-style-type: none;
+}
+footer #music-list ul li{
+  padding-left: 30px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: left;
+  color: #ccc;
+  border-bottom: #373535 1px solid;
+}
+footer .listscroll::-webkit-scrollbar{
+	width: 4px;
+	height: 100%;
+}
+footer .listscroll::-webkit-scrollbar-track{
+	background-color: black;
+}
+footer .listscroll::-webkit-scrollbar-thumb{
+	background-color: white;
+}
+footer .listscroll::-webkit-scrollbar-button{
+	background-color: black;
+}
+footer .listscroll::-webkit-scrollbar-corner{
+	background-color: black;
 }
 </style>
 <script>
@@ -226,6 +289,7 @@ export default {
           
         // }
       ],
+      musicListshow: false,
       curMusic: {
         index: 0,
         src: "../../static/music/校长 - 带你去旅行.mp3",
@@ -233,6 +297,9 @@ export default {
         name: '带你去旅行',
         artist: '校长'
 	    },
+      // curMusic: {
+      //     index: 0,
+      // },
       timer: '',
     };
   },
@@ -240,10 +307,11 @@ export default {
     playMusicControll() {
       if (this.player.paused) {
         this.player.play();
-		this.playState = "pause";
-		this.curTime = this.player.currentTime;
-		this.allTime = this.player.duration;
+        this.playState = "pause";
+        this.curTime = this.player.currentTime;
+        this.allTime = this.player.duration;
 		setInterval(()=>{
+      console.log(1)
 			this.curTime = this.player.currentTime;
 		},1000);
       } else {
@@ -253,18 +321,32 @@ export default {
     },
 	switchMusic(index){
     this.curMusic = JSON.parse(JSON.stringify(this.musicList[index]));
-    this.getMusicDetail(this.curMusic.id)
-		this.curMusic.index = index;
-		this.$nextTick(() => {
-      this.player.play();
-      this.playState = "pause";
-      this.curTime = this.player.currentTime;
-      this.player.oncanplay = ()=>{
-        this.allTime = this.player.duration;
-      } 
-		
+    //this.getMusicDetail(this.curMusic.id)
+      const url = "http://localhost:3000/music/url?id=" + this.curMusic.id;
+      //console.log(url)      
+      this.$http.get(url).then(res=>{
+        //console.log(res.data.data);
+        // console.log(res.data.data[0].url);
+        this.curMusic.src = res.data.data[0].url;
+        this.curMusic.index = index;
+        // console.log(this.player)
+        if(res.data.data[0].url){
+          this.$nextTick(() => {
+            this.player.play();
+            this.playState = "pause";
+            this.curTime = this.player.currentTime;
+            this.player.oncanplay = ()=>{
+              this.allTime = this.player.duration;
+            }
+      		});      
+        }else{
+            this.playState = "play";          
+        }
       // this.allTime = this.player.duration;
-		});
+        //this.curMusic.src = res.data.data[0].url;
+        
+      })
+		
 	},
     playNext(index) {
       let nextIndex = index + 1;
@@ -304,10 +386,10 @@ export default {
       return timeFormatt;
     },
     getMusicList() {
-      const url = "http://localhost:3000/top/list?idx=3";
+      const url = "http://localhost:3000/top/list?idx=1";
 				this.$http.get(url).then(res=>{
-					let tracks = res.data.playlist.tracks.slice(0,10);
-          console.log(tracks)
+					let tracks = res.data.playlist.tracks.slice(0);
+          //console.log(tracks)
           tracks.forEach((item,index)=>{
             let music = item.al;
             let singer = item.ar[0]; 
@@ -320,15 +402,24 @@ export default {
               artist: singer.name
             });
           });
-          console.log(this.musicList);
+          //console.log(this.musicList);
 				})
     },
-    getMusicDetail(id) {
-      const url = "http://localhost:3000/music/url?id=33894312";
-      this.$http.get(url).then(res=>{
-        console.log(res);
-      })
+    displayMusicList(){
+      console.log(this.musicList)
+      this.musicListshow = !this.musicListshow;
     }
+    // getMusicDetail(id) {
+    //   const url = "http://localhost:3000/music/url?id=" + id;
+    //   //console.log(url)      
+    //   this.$http.get(url).then(res=>{
+    //     console.log(res.data.data);
+    //     console.log(res.data.data[0].url);
+        
+    //     //this.curMusic.src = res.data.data[0].url;
+        
+    //   })
+    // }
   },
   mounted() {
   this.player = this.$refs.player;
