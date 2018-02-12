@@ -2,7 +2,7 @@
   <aside>
     <nav>
       <ul>
-        <li v-for="(list,index) in lists">
+        <li v-for="(list,index) in lists" :key="index">
           <a :href="list.href" @click="changeBar(index)" :class="{actived:list.isActive}" >{{list.title}}</a>
         </li>
       </ul>
@@ -43,7 +43,7 @@
 </style>
 <script>
   export default{
-    name:'aside',
+    name:'naside',
     data(){
       return{
         lists:[

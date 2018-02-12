@@ -215,12 +215,17 @@ footer #music-list-button a{
   width: 38px;
   display: block;
   height: 25px;
+  line-height: 25px;
   padding-left: 21px;
   color: #666;
   text-align: center;
   text-shadow: 0 1px #080707;
   background-position: -42px -68px;
   background-image: url("../assets/playbar.png");
+  text-decoration: none;
+}
+footer #music-list-button a:hover{
+  background-position: -42px -98px;
 }
 footer #music-list .listhdc{
   font-size: 16px;
@@ -269,7 +274,7 @@ footer .listscroll::-webkit-scrollbar-corner{
 </style>
 <script>
 export default {
-  name: "player",
+  name: "nplayer",
   data() {
     return {
       curTime: "00:00",

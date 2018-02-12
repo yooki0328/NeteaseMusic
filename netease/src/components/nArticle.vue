@@ -2,7 +2,7 @@
     <article>
         <nav>
             <ul>
-                <li v-for="(bar,index) in bars">
+                <li v-for="(bar,index) in bars" :key="index">
                     <a :href="bar.href" @click="changeBar(index)" :class="{actived:bar.isActive}">{{bar.title}}</a>
                 </li>
             </ul>
@@ -11,7 +11,7 @@
         <dl>
 			<dt>推荐歌单</dt>
 
-			<dd v-for="list in lists">
+			<dd v-for="(list,index) in lists" :key="index">
 				<div>
 					<img :src="list.src" alt="pic">
 					<a :href="list.href" class="list_text">{{list.text}}</a>
@@ -54,7 +54,7 @@
 </template>
 <script>
 export default {
-    name: 'article',
+    name: 'narticle',
     data() {
         return {
             bars: [{
