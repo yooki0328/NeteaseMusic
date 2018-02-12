@@ -28,11 +28,14 @@
     <div id="music-list" v-show="musicListshow" class="listscroll">
       <h4 class="listhdc">播放列表</h4>
       <ul>
-        <li v-for="(music,index) in musicList" :key="index">{{music.name}}</li>
+        <li v-for="(music,index) in musicList" :key="index" @click="switchMusic(index)">
+          <div>{{music.name}}</div>
+          <div>{{music.artist}}</div>  
+        </li>
       </ul>
     </div>
     <div id="music-list-button">
-      <button @click="displayMusicList">播放列表</button>
+      <a href="javascript:;" @click="displayMusicList" >{{musicList.length}}</a>
     </div>
 		<div id="volume">
       <div>
@@ -100,7 +103,8 @@ footer #volume {
   height: 40px;
   display: flex;
   align-items: center;
-  flex: 1;
+  margin-right: 10%;
+  /* flex: 1; */
 }
 footer #volume .volumeIcon {
   display: block;
@@ -198,24 +202,31 @@ footer #play-info .music-info{
 }
 footer #music-list{
   position: absolute;
-  width: 300px;
+  width: 600px;
   height: 300px;
   overflow-y: scroll;
   background-color:#191B1F;
-  opacity:0.9;
   top: -300px;
   right: 20px;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-footer #music-list-button{
-  /* flex:1; */
+footer #music-list-button a{
+  width: 38px;
+  display: block;
+  height: 25px;
+  padding-left: 21px;
+  color: #666;
+  text-align: center;
+  text-shadow: 0 1px #080707;
+  background-position: -42px -68px;
+  background-image: url("../assets/playbar.png");
 }
 footer #music-list .listhdc{
   font-size: 16px;
   color: #e2e2e2;
-  margin-bottom: 5px;
-  padding-left: 15px;  
+  /* margin-bottom: 5px; */
+  padding: 10px 0 10px 15px;  
   background-color: black; 
 }
 footer #music-list ul{
@@ -228,6 +239,16 @@ footer #music-list ul li{
   text-align: left;
   color: #ccc;
   border-bottom: #373535 1px solid;
+  cursor: pointer;
+}
+footer #music-list ul li:hover{
+  background: rgba(0,0,0,0.4);
+}
+footer #music-list ul li div{
+  display: inline-block;
+}
+footer #music-list ul li div:first-child{
+  width: 60%;
 }
 footer .listscroll::-webkit-scrollbar{
 	width: 4px;
@@ -309,11 +330,15 @@ export default {
         this.player.play();
         this.playState = "pause";
         this.curTime = this.player.currentTime;
-        this.allTime = this.player.duration;
-		setInterval(()=>{
-      console.log(1)
-			this.curTime = this.player.currentTime;
-		},1000);
+        // this.allTime = this.player.duration;
+        this.player.oncanplay = ()=>{
+          this.allTime = this.player.duration;
+        }
+        clearInterval(this.timer);
+        this.timer = setInterval(()=>{
+          // console.log(1)
+          this.curTime = this.player.currentTime;
+        },1000);
       } else {
         this.player.pause();
         this.playState = "play";
@@ -332,14 +357,16 @@ export default {
         // console.log(this.player)
         if(res.data.data[0].url){
           this.$nextTick(() => {
-            this.player.play();
-            this.playState = "pause";
-            this.curTime = this.player.currentTime;
-            this.player.oncanplay = ()=>{
-              this.allTime = this.player.duration;
-            }
+            // this.player.play();
+            // this.playState = "pause";
+            // this.curTime = this.player.currentTime;
+            // this.player.oncanplay = ()=>{
+            //   this.allTime = this.player.duration;
+            // }
+            this.playMusicControll();
       		});      
         }else{
+            clearInterval(this.timer);
             this.playState = "play";          
         }
       // this.allTime = this.player.duration;
@@ -406,9 +433,9 @@ export default {
 				})
     },
     displayMusicList(){
-      console.log(this.musicList)
+      // console.log(this.musicList)
       this.musicListshow = !this.musicListshow;
-    }
+    },
     // getMusicDetail(id) {
     //   const url = "http://localhost:3000/music/url?id=" + id;
     //   //console.log(url)      
